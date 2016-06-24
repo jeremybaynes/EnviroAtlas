@@ -1,8 +1,8 @@
 define({
   root: ({
-    _widgetLabel: "Demo",
-    label1: "I am a demo widget.",
-    label2: "This is configurable."
+    _widgetLabel: "DynamicSymbology",
+    label1: "Dyanamic Symbology",
+    label2: "Not configurable."
   }),
   "ar": 0,
   "cs": 0,
