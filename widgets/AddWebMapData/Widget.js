@@ -372,15 +372,17 @@ define(['dojo/_base/declare',
                                 //if layers have popupInfo grab them
                                 if(l.layers){
 
-                                    var infoTemps=[];
+                                    var infoTemps={};
                                     l.layers.forEach(function(iL){
                                         var popupTemplate = new PopupTemplate(iL.popupInfo);
-                                        var infoTemp = {
+                                        //console.log(iL.id);
+
+                                        infoTemps[iL.id] = {
                                             infoTemplate: popupTemplate,
                                             layerUrl: null
                                         }
-                                        infoTemps.push(infoTemp);
                                     });
+                                    //console.log(infoTemps);
                                     tempLayer.setInfoTemplates(infoTemps);
                                 }
 
