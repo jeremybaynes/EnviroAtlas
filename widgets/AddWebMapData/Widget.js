@@ -121,6 +121,11 @@ define(['dojo/_base/declare',
             },
 
             onSignIn: function (credential) {
+                var hasSignIn = !!this.currentUserId;
+                if(hasSignIn){
+                    console.log("Already signed in");
+                    return;
+                }
                 this.credential = credential;
                 this.currentUserId = credential.userId;
 
@@ -142,9 +147,9 @@ define(['dojo/_base/declare',
 
             doSignIn: function () {
                 console.log("ChangeWebMap :: doSignIn");
-
-                var regOAuth = tokenUtils.registerOAuthInfo(this.config.portalUrl, "S8P0zvjK2t50sCNd");
-
+                //y3nEkDDXjHlX0pCZ      //S8P0zvjK2t50sCNd
+                var regOAuth = tokenUtils.registerOAuthInfo(this.config.portalUrl, "y3nEkDDXjHlX0pCZ");
+                
                 tokenUtils.signInPortal(this.config.portalUrl)
                     .then(function (credential) {
                         topic.publish('userSignIn', credential);
@@ -360,16 +365,33 @@ define(['dojo/_base/declare',
             // when a web map is selected make it active, but keep the extent
             _onItemSelected: function (item) {
                 testmap = this.map;
+                console.log("THIS IS THE ITEM :: ", item);
 
                 item.getItemData().then(function(response){
+                    console.log("Response(WebMap) :: ", response);
                     response.operationalLayers.forEach(function(l){
                         if(l.url){
-                            console.log("Web Map Layers:: ",l.layerType);
+                            console.log("Layer Type :: ",l.layerType);
                             if(l.layerType == 'ArcGISMapServiceLayer'){
                                 //Get the layer
                                 tempLayer = new ArcGISDynamicMapServiceLayer(l.url, {
                                     id: l.id,
                                     opacity: l.opacity,
+                                });
+                                tempLayer.on("load", function(){
+                                    //testmap.addLayer(tempLayer);
+                                    //remove group layers from vivsible layers. This is a esri bug
+                                    var vLayer = tempLayer.visibleLayers;
+                                    tempLayer.layerInfos.forEach(function(lInfo){
+                                        if(lInfo.parentLayerId == -1){
+                                            var index = vLayer.indexOf(lInfo.id);
+                                            if(index != -1){
+                                                vLayer.splice(index,1);
+                                                //console.log("remove ::", lInfo.id);
+                                            }
+                                        }
+                                    });
+
                                 });
                                 //if layers have popupInfo grab them
                                 if(l.layers){
@@ -377,16 +399,14 @@ define(['dojo/_base/declare',
                                     var infoTemps={};
                                     l.layers.forEach(function(iL){
                                         var popupTemplate = new PopupTemplate(iL.popupInfo);
-                                        //console.log(iL.id);
-
                                         infoTemps[iL.id] = {
                                             infoTemplate: popupTemplate,
                                             layerUrl: null
                                         }
                                     });
-                                    //console.log(infoTemps);
                                     tempLayer.setInfoTemplates(infoTemps);
                                 }
+                                testmap.addLayer(tempLayer);
 
                             }else if(l.layerType == 'ArcGISFeatureLayer'){
                                 tempLayer = new FeatureLayer(l.url, {
@@ -399,6 +419,7 @@ define(['dojo/_base/declare',
                                     var popupTemplate = new PopupTemplate(l.popupInfo);
                                     tempLayer.infoTemplate = popupTemplate;
                                 }
+                                testmap.addLayer(tempLayer);
                             }
                         }
                         else{
@@ -415,18 +436,13 @@ define(['dojo/_base/declare',
                                     }
                                 });
                             }else{
-                                console.log("Add Layer Error:: Layer of unknown type");
+                                console.log("Error:: Layer of unknown type");
                             }
-                        }
-                        if(tempLayer){
                             testmap.addLayer(tempLayer);
                         }
-
                     });
                 });
-                //Close the widget
                 PanelManager.getInstance().closePanel(w.id + "_panel");
             }
-
         });
     });
