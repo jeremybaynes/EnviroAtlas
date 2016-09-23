@@ -78,7 +78,7 @@ define([
 		  return false;  
 		};
 
-    	var dataFactSheet = "https://leb.epa.gov/projects/EnviroAtlas/currentDevelopment/";
+
 		var chkIdDictionary = {};
 		  var loadJSON = function(callback){   
 	
@@ -134,7 +134,7 @@ define([
 					tdIndex = 0;
 				}				
 				
-				console.log(eaIDFilteredList);
+				//console.log(eaIDFilteredList);
 				//alert(currentCellText);		
 			} ); 
     	
@@ -296,7 +296,7 @@ define([
 			        hashFactsheetLink[buttonInfoId] = eaDfsLink;
 			        hashLayerNameLink[buttonInfoId] = layerName;
 			        document.getElementById(buttonInfoId).onclick = function(e) {
-				        //window.open(dataFactSheet + selectableLayerArray[i]['eaDfsLink']);//this will open the wrong link
+				        //window.open(window.dataFactSheet + selectableLayerArray[i]['eaDfsLink']);//this will open the wrong link
 				        if (hashFactsheetLink[this.id] == "N/A") {
 			        		var dataFactNote = new Dialog({
 						        title: hashLayerNameLink[this.id],
@@ -306,7 +306,7 @@ define([
 					        dataFactNote.set("content", "Data fact sheet link is not available!");
 			
 				        } else {
-				        	window.open(dataFactSheet + hashFactsheetLink[this.id]);
+				        	window.open(window.dataFactSheet + hashFactsheetLink[this.id]);
 				        }		      
 				    };    	
 				}//end of if (currentLayerSelectable)
@@ -419,6 +419,7 @@ define([
 			newTitleCell.appendChild(title);        
 
 		}
+        /* Commenting out Supply/demand/driver choices.
 		document.getElementById("Supply").onclick = function() {
 		    _updateSelectableLayer();
 		};
@@ -430,7 +431,8 @@ define([
 		};
 		document.getElementById("SpatiallyExplicit").onclick = function() {
 		    _updateSelectableLayer();
-		};				
+		};	
+        */
 		document.getElementById("hideIcons").onclick = function() {
 		    _updateSelectableLayer();
 		};					
@@ -472,12 +474,11 @@ define([
        	var newTitleCell  = newRow.insertCell(1);
 		var title = document.createElement('label');
 		title.innerHTML = "National";    
-		newTitleCell.appendChild(title);        
+		newTitleCell.appendChild(title); 
+        newTitleCell.style.paddingRight = "15px";
 
-		//add row of Community geography
-	    var newRow   = tableRef.insertRow(tableRef.rows.length);	    
-       	newRow.style.height = "20px";
-       	var newCheckboxCell  = newRow.insertCell(0);
+		//add Community geography to same row
+       	var newCheckboxCell  = newRow.insertCell(2);
        	var checkbox = document.createElement('input');
 		checkbox.type = "checkbox";
         chkboxId = "chkCommunity";
@@ -502,12 +503,12 @@ define([
         	}		
 	    });				
 		/// add Community title:
-       	var newTitleCell  = newRow.insertCell(1);
+       	var newTitleCell  = newRow.insertCell(3);
 		var title = document.createElement('label');
 		title.innerHTML = "Community";    
 		newTitleCell.appendChild(title); 
 		
-		var newButtonInfoCell  = newRow.insertCell(2);
+		var newButtonInfoCell  = newRow.insertCell(4);
 		var buttonInfo = document.createElement('input');
 		buttonInfo.type = "button";
         var buttonInfoId = "butSelectOneCommunity";
